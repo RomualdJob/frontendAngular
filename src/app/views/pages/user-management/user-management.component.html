@@ -1,0 +1,74 @@
+<!-- Table des utilisateurs -->
+<table cTable>
+  <thead cTableColor="dark">
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">USERNAME</th>
+      <th scope="col">EMAIL</th>
+      <th scope="col">ROLE</th>
+      <th scope="col">MODIFIER</th>
+      <th scope="col">SUPPRIMER</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let user of users">
+      <th scope="row">{{ user.id }}</th>
+      <td>{{ user.name }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.role }}</td>
+      <td><button cButton color="info" (click)="onEditUser(user)">Modifier</button></td>
+      <td><button cButton color="danger" (click)="onDeleteUser(user.id)">Supprimer</button></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Bouton Ajouter un utilisateur -->
+<button cButton color="success" (click)="onAddUser()">Ajouter un utilisateur</button>salut
+
+<!-- Modal d'ajout/modification d'utilisateur -->
+<div *ngIf="isModalOpen" class="modal fade show d-block" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <!-- Header du modal avec le bouton de fermeture en haut à droite -->
+      <div class="modal-header">
+        <h5 class="modal-title">{{ selectedUser ? 'Modifier' : 'Ajouter' }} l'utilisateur</h5>
+        <button type="button" class="close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <!-- Formulaire à l'intérieur du modal -->
+      <form (ngSubmit)="onSaveUser()">
+        <div class="modal-body">
+          <div *ngIf="selectedUser || isAdding">
+            <div class="mb-3">
+              <label for="name" class="form-label">Username:</label>
+              <input id="name" [(ngModel)]="selectedUser.name" name="name" type="text" class="form-control" required  *ngIf="selectedUser"/>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email:</label>
+              <input id="email" [(ngModel)]="selectedUser.email" name="email" type="email" class="form-control" required *ngIf="selectedUser" />
+            </div>
+
+            <div class="mb-3">
+              <label for="role" class="form-label">Rôle:</label>
+              <input id="role" [(ngModel)]="selectedUser.role" name="role" type="text" class="form-control" required *ngIf="selectedUser" />
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Mot de passe:</label>
+              <input id="password" [(ngModel)]="selectedUser.password" name="password" type="text" class="form-control" required *ngIf="selectedUser" />
+            </div>
+            
+          </div>
+        </div>
+
+        <!-- Footer du modal avec les boutons d'action -->
+        <div class="modal-footer">
+          <button type="submit" cButton color="info">{{ selectedUser ? 'Enregistrer' : 'Ajouter' }}</button>
+          <button type="button" cButton color="danger" (click)="closeModal()">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

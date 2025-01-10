@@ -1,0 +1,46 @@
+<div class="container">
+  <h2>Register</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="submitForm()">
+    
+    <!-- Champ pour le nom -->
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" formControlName="name" />
+      <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-danger">
+        <small>Name is required.</small>
+      </div>
+    </div>
+
+    <!-- Champ pour l'email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" formControlName="email" />
+      <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
+        <small *ngIf="registerForm.get('email')?.hasError('required')">Email is required.</small>
+        <small *ngIf="registerForm.get('email')?.hasError('email')">Invalid email format.</small>
+      </div>
+    </div>
+
+    <!-- Champ pour le mot de passe -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" formControlName="password" />
+      <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
+        <small>Password is required.</small>
+      </div>
+    </div>
+
+    <!-- Champ pour confirmer le mot de passe -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" class="form-control" id="confirmPassword" formControlName="confirmPassword" />
+      <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="text-danger">
+        <small *ngIf="registerForm.get('confirmPassword')?.hasError('required')">Confirm Password is required.</small>
+        <small *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch')">Passwords do not match.</small>
+      </div>
+    </div>
+
+    <!-- Bouton d'enregistrement -->
+    <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">Register</button>
+  </form>
+</div>
