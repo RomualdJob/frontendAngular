@@ -4,6 +4,7 @@ export interface User {
   id: number;
   email: string;
   name: string;
-  role: string;
-  password: string; // Ajoutez cette ligne si elle n'existe pas
+  password: string;
+  roles: string[];
+  // Ajoutez cette ligne si elle n'existe pas
 }

@@ -1,5 +1,5 @@
-<div class="container">
-  <h2>Register</h2>
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">Register</h2>
   <form [formGroup]="registerForm" (ngSubmit)="submitForm()">
     
     <!-- Champ pour le nom -->
@@ -40,7 +40,28 @@
       </div>
     </div>
 
+    <!-- Champ pour les rôles -->
+    <div class="form-group">
+      <label for="roleName">Roles</label>
+      <div class="d-flex flex-wrap">
+        <div *ngFor="let role of roles" class="form-check form-check-inline">
+          <input 
+            type="checkbox" 
+            [id]="role.roles" 
+            [value]="role.roles" 
+            (change)="onRoleChange(role.roles, $event)" 
+            [checked]="registerForm.get('roleNames')?.value.includes(role.roles)"
+            class="form-check-input"
+          />
+          <label [for]="role.roles" class="form-check-label">{{ role.roles }}</label>
+        </div>
+      </div>
+      <div *ngIf="registerForm.get('roleNames')?.invalid && registerForm.get('roleNames')?.touched" class="text-danger">
+        <small>At least one role is required.</small>
+      </div>
+    </div>
+
     <!-- Bouton d'enregistrement -->
-    <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">Register</button>
+    <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">Register</button>
   </form>
 </div>

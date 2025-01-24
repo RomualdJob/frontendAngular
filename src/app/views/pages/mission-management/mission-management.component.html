@@ -1,47 +1,74 @@
-
-<table cTable>
-    <thead cTableColor="dark">
+<!-- Table des missions -->
+<table class="table">
+  <thead class="thead-dark">
     <tr>
       <th scope="col">ID</th>
       <th scope="col">NOM</th>
-      <th scope="col">EMAIL</th>
-      <th scope="col">USERNAME</th>
-      <th scope="col">ROLE</th>
-      <th scope="col">DATE INSCRIPTION</th>
+      <th scope="col">DESCRIPTION</th>
+      <th scope="col">DATE DEBUT</th>
+      <th scope="col">DATE LIMITE</th>
+      <th scope="col">UTILISATEUR</th> <!-- Nouvelle colonne pour l'utilisateur -->
       <th scope="col">MODIFIER</th>
       <th scope="col">SUPPRIMER</th>
     </tr>
-    </thead>
-    <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>&#64;mdo</td>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>&#64;mdo</td>
-      <td>&#64;mdo</td>
-  
+  </thead>
+  <tbody>
+    <tr *ngFor="let mission of missions">
+      <th scope="row">{{ mission.id }}</th>
+      <td>{{ mission.title }}</td>
+      <td>{{ mission.description }}</td>
+      <td>{{ mission.dateDebut | date }}</td>
+      <td>{{ mission.dateLimit | date }}</td>
+      <td>{{ mission.userForMission?.name || 'Aucun utilisateur' }}</td> <!-- Affiche l'utilisateur ou 'Aucun utilisateur' -->
+      <td><button class="btn btn-info" (click)="onEditMission(mission)">Modifier</button></td>
+      <!--<td><button class="btn btn-danger" (click)="onDeleteMission(mission.id)">Supprimer</button></td>-->
     </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>&#64;fat</td>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>&#64;fat</td>
-      <td>Jacob</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td colSpan="2">Larry the Bird</td>
-      <td>&#64;twitter</td>
-      <td colSpan="2">Larry the Bird</td>
-      <td>&#64;twitter</td>
-      <td colSpan="2">Larry the Bird</td>
-     
-    </tr>
-    </tbody>
-  </table>
+  </tbody>
+</table>
+
+<!-- Bouton Ajouter une mission -->
+<button class="btn btn-success" (click)="onAddMission()">Ajouter une mission</button>
+
+<!-- Modal d'ajout/modification de mission -->
+<div *ngIf="isModalOpen" class="modal fade show d-block" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isAdding ? 'Ajouter' : 'Modifier' }} la mission</h5>
+        <button type="button" class="close" (click)="closeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <!--<form (ngSubmit)="onSaveMission()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="title" class="form-label">Nom de la mission:</label>
+            <input id="title" [(ngModel)]="selectedMission.title" name="title" type="text" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <textarea id="description" [(ngModel)]="selectedMission.description" name="description" class="form-control" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="dateDebut" class="form-label">Date de début:</label>
+            <input id="dateDebut" [(ngModel)]="selectedMission.dateDebut" name="dateDebut" type="date" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="dateLimit" class="form-label">Date limite:</label>
+            <input id="dateLimit" [(ngModel)]="selectedMission.dateLimit" name="dateLimit" type="date" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label for="user" class="form-label">Assigner un utilisateur:</label>
+            <select id="user" [(ngModel)]="selectedMission.userForMission.id" name="user" class="form-control">
+              <option *ngFor="let user of users" [value]="user.id">{{ user.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-info">{{ isAdding ? 'Ajouter' : 'Enregistrer' }}</button>
+          <button type="button" class="btn btn-danger" (click)="closeModal()">Annuler</button>
+        </div>
+      </form>-->
+    </div>
+  </div>
+</div>
