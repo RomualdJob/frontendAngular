@@ -1,77 +1,81 @@
-<!-- Table des utilisateurs -->
-<button class="btn btn-success" (click)="onAddUser()">Ajouter un utilisateur</button>
-
+<!-- Table + bouton -->
+<button class="btn btn-success mb-3" (click)="onAddUser()">Ajouter un utilisateur</button>
 <table class="table">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">ID</th>
-      <th scope="col">USERNAME</th>
-      <th scope="col">EMAIL</th>
-      <th scope="col">ROLE</th>
-      <th scope="col">MODIFIER</th>
-      <th scope="col">SUPPRIMER</th>
+      <th>ID</th>
+      <th>USERNAME</th>
+      <th>EMAIL</th>
+      <th>ROLE</th>
+      <th>MODIFIER</th>
+      <th>SUPPRIMER</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let user of users">
-      <th scope="row">{{ user.id }}</th>
+      <th>{{ user.id }}</th>
       <td>{{ user.name }}</td>
       <td>{{ user.email }}</td>
-      <td>{{ user.roles.join(', ') }}</td> <!-- Affichage des rôles avec une virgule de séparation -->
+      <td>{{ user.roles?.join(', ') || 'Aucun rôle' }}</td>
       <td><button class="btn btn-info" (click)="onEditUser(user)">Modifier</button></td>
       <td><button class="btn btn-danger" (click)="onDeleteUser(user.id)">Supprimer</button></td>
     </tr>
   </tbody>
 </table>
 
-<!-- Modal d'ajout/modification d'utilisateur -->
-<div *ngIf="isModalOpen" class="modal fade show d-block" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="isModalOpen"></div>
+
+<!-- Modal -->
+<div class="modal fade" [class.show]="isModalOpen" [style.display]="isModalOpen ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">{{ isAdding ? 'Ajouter' : 'Modifier' }} l'utilisateur</h5>
-        <button type="button" class="close" (click)="closeModal()">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
       </div>
-      <form (ngSubmit)="onSaveUser()">
+      <form (ngSubmit)="onSaveUser()" #userForm="ngForm">
         <div class="modal-body">
-          <!-- Nom de l'utilisateur -->
           <div class="mb-3">
             <label for="name" class="form-label">Username:</label>
             <input id="name" [(ngModel)]="selectedUser.name" name="name" type="text" class="form-control" required />
           </div>
-
-          <!-- Email de l'utilisateur -->
           <div class="mb-3">
             <label for="email" class="form-label">Email:</label>
             <input id="email" [(ngModel)]="selectedUser.email" name="email" type="email" class="form-control" required />
           </div>
-
-          <!-- Rôles de l'utilisateur -->
           <div class="mb-3">
-            <label for="role" class="form-label">Rôle:</label>
-            <!-- Cases à cocher pour les rôles -->
+            <label class="form-label">Rôle:</label>
             <div *ngFor="let role of roles" class="form-check">
               <input 
                 type="checkbox" 
-                [id]="role.roles" 
-                [checked]="selectedUser.roles.includes(role.roles)"  
-                (change)="onRoleChange(role.roles, $event)"  
-                name="roles" 
+                [id]="'role-' + role.id" 
+                [checked]="selectedUser.roles?.includes(role.roles)"
+                (change)="onRoleChange(role.roles, $event)" 
                 class="form-check-input" />
-              <label [for]="role.roles" class="form-check-label">{{ role.roles }}</label>
+              <label [for]="'role-' + role.id" class="form-check-label">{{ role.roles }}</label>
             </div>
+            <small class="text-muted" *ngIf="roles.length === 0">Aucun rôle disponible</small>
           </div>
-
-          <!-- Mot de passe de l'utilisateur -->
           <div class="mb-3">
             <label for="password" class="form-label">Mot de passe:</label>
-            <input id="password" [(ngModel)]="selectedUser.password" name="password" type="password" class="form-control" required />
+            <input 
+              id="password" 
+              [(ngModel)]="selectedUser.password" 
+              name="password" 
+              type="password" 
+              class="form-control" 
+              [required]="isAdding" 
+              [placeholder]="isAdding ? 'Mot de passe requis' : 'Laisser vide pour ne pas modifier'" />
+            <small class="text-muted" *ngIf="!isAdding">
+              Laisser vide pour ne pas modifier le mot de passe
+            </small>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-info">{{ isAdding ? 'Ajouter' : 'Enregistrer' }}</button>
+          <button type="submit" class="btn btn-info" [disabled]="userForm.invalid">
+            {{ isAdding ? 'Ajouter' : 'Enregistrer' }}
+          </button>
           <button type="button" class="btn btn-danger" (click)="closeModal()">Annuler</button>
         </div>
       </form>

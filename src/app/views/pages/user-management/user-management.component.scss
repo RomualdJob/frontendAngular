@@ -1,25 +1,16 @@
-.modal-dialog.modal-lg {
-    max-width: 55%; /* Augmente la largeur du modal */
-  }
-  
-  .modal-content {
-    border-radius: 8px; /* Ajoute un arrondi aux coins du modal */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ajoute une ombre subtile autour du modal */
-  }
-  
-  .modal-header {
-    background-color: #343a40; /* Fond sombre pour l'en-tête */
-    color: white; /* Texte en blanc */
-    padding: 15px;
-    border-radius: 8px 8px 0 0; /* Arrondir uniquement le haut du modal */
-  }
-  
-  .modal-footer {
-    padding: 15px;
-    border-top: 1px solid #e9ecef;
-  }
-  
-  .modal-title {
-    font-size: 1.5rem;
-  }
-  
+/* Style optionnel pour améliorer l'apparence */
+.modal-backdrop {
+  z-index: 1040;
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.table th {
+  font-weight: 600;
+}
+
+.btn-group {
+  white-space: nowrap;
+}

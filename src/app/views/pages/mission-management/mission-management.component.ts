@@ -1,174 +1,195 @@
 import { Component, OnInit } from '@angular/core';
 import { MissionService } from '../../../service/mission.service';
-import { Mission } from '../../../models/mission.model';
-import { UserService } from '../../../service/user.service'; // Service pour récupérer les utilisateurs
-//import { userForMission } from '../../../models/userForMission.model'; // Modèle de l'utilisateur
-import { UserForMission } from '../../../models/UserForMission.model';
+import { UserService } from '../../../service/user.service';
+import { RoleService } from '../../../service/role.service';
+import { Mission, CreateMissionRequest } from '../../../models/mission.model';
+import { UserRoleDTO } from '../../../models/user.model';
+import { Role } from '../../../models/role.model';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';  // Assurez-vous d'importer FormsModule
-import { ButtonDirective } from '@coreui/angular'; // Import CoreUI components nécessaires
-import { RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, TableDirective, TableColorDirective, TableActiveDirective, BorderDirective, AlignDirective } from '@coreui/angular';
-import { DefaultLayoutComponent } from '../../../layout';
-import { DefaultHeaderComponent } from '../../../layout';
-import { DefaultFooterComponent } from '../../../layout';
-
+import { FormsModule } from '@angular/forms';
+import { ButtonDirective } from '@coreui/angular';
 
 @Component({
   selector: 'app-mission-management',
   standalone: true,
-  imports: [
-    RowComponent, ColComponent, CardComponent, CardHeaderComponent, CardBodyComponent, TableDirective, TableColorDirective, TableActiveDirective, BorderDirective, AlignDirective,
-    DefaultLayoutComponent, DefaultFooterComponent, DefaultHeaderComponent,
-    CommonModule, FormsModule, ButtonDirective
-  ],
+  imports: [CommonModule, FormsModule, ButtonDirective],
   templateUrl: './mission-management.component.html',
   styleUrls: ['./mission-management.component.scss']
 })
 export class MissionManagementComponent implements OnInit {
-  missions: Mission[] = []; // Liste des missions
-  users: UserForMission[] = []; // Liste des utilisateurs
-  isModalOpen: boolean = false; // Contrôle l'ouverture du modal
-  selectedMission: Mission = { id: 0, title: '', description: '', dateDebut: '', dateLimit: '' }; // Mission sélectionnée
-  isAdding: boolean = false; // Indique si on est en mode ajout
+  missions: Mission[] = [];
+  users: UserRoleDTO[] = [];
+  roles: Role[] = [];
+  selectedMission: Mission = {
+    id: 0,
+    titre: '',
+    description: '',
+    budget: 0,
+    datePublication: '',
+    dateLimit: ''
+  };
+  isModalOpen: boolean = false;
+  isEditing: boolean = false;
+  selectedUserId?: number;
 
   constructor(
     private missionService: MissionService,
-    private userService: UserService // Injecter le service utilisateur
+    private userService: UserService,
+    private roleService: RoleService
   ) {}
 
   ngOnInit(): void {
-    this.loadMissions(); // Charger les missions dès le début
-    this.loadUsers(); // Charger les utilisateurs dès le début
+    this.loadMissions();
+    this.loadUsers();
+    this.loadRoles();
   }
 
-  // Charger toutes les missions
   loadMissions(): void {
-    this.missionService.getAllMissions().subscribe(
-      (data) => {
-        this.missions = data;
+    this.missionService.getAllMissions().subscribe({
+      next: (missions: Mission[]) => {
+        this.missions = missions;
       },
-      (error) => {
-        console.error('Erreur lors de la récupération des missions', error);
-      }
-    );
+      error: (err: any) => console.error('Erreur chargement missions:', err)
+    });
   }
 
-  // Charger la liste des utilisateurs
   loadUsers(): void {
-    this.userService.getAllUsers().subscribe(
-      (data) => {
-        this.users = data;
+    this.userService.getAllUsers().subscribe({
+      next: (users: UserRoleDTO[]) => {
+        this.users = users;
       },
-      (error) => {
-        console.error('Erreur lors de la récupération des utilisateurs', error);
-      }
-    );
+      error: (err: any) => console.error('Erreur chargement utilisateurs:', err)
+    });
   }
 
-  // Ouvrir le modal en mode ajout
-  /*onAddMission(): void {
-    this.selectedMission = { id: 0, title: '', description: '', dateDebut: '', dateLimit: '', user: undefined }; // Initialisation avec une mission vide
-    this.isAdding = true; // Passer en mode ajout
-    this.isModalOpen = true; // Ouvrir le modal
-  }*/
-
-  // Ouvrir le modal en mode modification
-  onEditMission(mission: Mission): void {
-    this.selectedMission = { ...mission }; // Créer une copie de la mission sélectionnée
-    this.isAdding = false; // Passer en mode modification
-    this.isModalOpen = true; // Ouvrir le modal
-  }
-
-  // Sauvegarder les modifications de la mission (ajout ou modification)
- /* onSaveMission(): void {
-    if (this.isAdding) {
-      this.addMission(); // Appeler la méthode d'ajout si on est en mode ajout
-    } else {
-      this.updateMission(); // Appeler la méthode de mise à jour si on est en mode modification
-    }
-  }
-
-  // Ajouter une nouvelle mission
-  /*addMission(): void {
-    if (this.selectedMission) {
-      this.missionService.addMission(this.selectedMission).subscribe(
-        (response) => {
-          console.log('Nouvelle mission ajoutée:', response);
-          this.loadMissions(); // Recharger la liste des missions après l'ajout
-          this.closeModal(); // Fermer le modal
-        },
-        (error) => {
-          console.error('Erreur lors de l\'ajout de la mission', error);
-        }
-      );
-    }
-  }
-
-  // Modifier une mission existante
-  updateMission(): void {
-    if (this.selectedMission) {
-      this.missionService.updateMission(this.selectedMission.id, this.selectedMission).subscribe(
-        (response) => {
-          console.log('Mission mise à jour:', response);
-          this.loadMissions(); // Recharger la liste des missions après la mise à jour
-          this.closeModal(); // Fermer le modal
-        },
-        (error) => {
-          console.error('Erreur lors de la mise à jour de la mission', error);
-        }
-      );
-    }
-  }
-
-  // Supprimer une mission
-  onDeleteMission(id: number): void {
-    this.missionService.deleteMission(id).subscribe(
-      () => {
-        console.log('Mission supprimée');
-        this.loadMissions(); // Recharger la liste des missions après suppression
+  loadRoles(): void {
+    this.roleService.getAllRoles().subscribe({
+      next: (roles: Role[]) => {
+        this.roles = roles;
       },
-      (error) => {
-        console.error('Erreur lors de la suppression de la mission', error);
-      }
-    );
+      error: (err: any) => console.error('Erreur chargement rôles:', err)
+    });
   }
 
-  // Fermer le modal
+  openAddModal(): void {
+    this.selectedMission = {
+      id: 0,
+      titre: '',
+      description: '',
+      budget: 0,
+      datePublication: '',
+      dateLimit: ''
+    };
+    this.selectedUserId = undefined;
+    this.isEditing = false;
+    this.isModalOpen = true;
+  }
+
+  openEditModal(mission: Mission): void {
+    this.selectedMission = { ...mission };
+    this.selectedUserId = mission.user?.id;
+    this.isEditing = true;
+    this.isModalOpen = true;
+  }
+
   closeModal(): void {
     this.isModalOpen = false;
-    // Réinitialiser la mission sélectionnée
-    if (this.isAdding) {
-      this.selectedMission = { id: 0, title: '', description: '', dateDebut: '', dateLimit: '', user: { id: 0, name: '' } }; // Réinitialiser pour l'ajout
-    }
-  }*/
-
-    // Initialiser la mission sélectionnée avec un utilisateur par défaut
-onAddMission(): void {
-  this.selectedMission = { 
-    id: 0, 
-    title: '', 
-    description: '', 
-    dateDebut: '', 
-    dateLimit: '', 
-    userForMission: { id: 0, name: '' } // Initialiser user avec une valeur par défaut
-  };
-  this.isAdding = true;
-  this.isModalOpen = true;
-}
-
-// Réinitialiser la mission sélectionnée lors de la fermeture du modal
-closeModal(): void {
-  this.isModalOpen = false;
-  if (this.isAdding) {
-    this.selectedMission = { 
-      id: 0, 
-      title: '', 
-      description: '', 
-      dateDebut: '', 
-      dateLimit: '', 
-      userForMission: { id: 0, name: '' } // Réinitialiser user avec une valeur par défaut
+    this.selectedMission = {
+      id: 0,
+      titre: '',
+      description: '',
+      budget: 0,
+      datePublication: '',
+      dateLimit: ''
     };
+    this.selectedUserId = undefined;
   }
-}
 
+  onSaveMission(): void {
+    if (this.isEditing) {
+      this.updateMission();
+    } else {
+      this.createMission();
+    }
+  }
+
+  createMission(): void {
+    const missionToCreate: CreateMissionRequest = {
+      titre: this.selectedMission.titre,
+      description: this.selectedMission.description,
+      budget: this.selectedMission.budget,
+      datePublication: this.selectedMission.datePublication,
+      dateLimit: this.selectedMission.dateLimit,
+      user: this.selectedUserId ? { id: this.selectedUserId } : undefined
+    };
+
+    this.missionService.createMission(missionToCreate).subscribe({
+      next: (mission: Mission) => {
+        this.loadMissions();
+        this.closeModal();
+        alert('Mission créée avec succès!');
+      },
+      error: (err: any) => {
+        console.error('Erreur création mission:', err);
+        alert('Erreur lors de la création de la mission');
+      }
+    });
+  }
+
+  updateMission(): void {
+    const missionToUpdate: CreateMissionRequest = {
+      titre: this.selectedMission.titre,
+      description: this.selectedMission.description,
+      budget: this.selectedMission.budget,
+      datePublication: this.selectedMission.datePublication,
+      dateLimit: this.selectedMission.dateLimit,
+      user: this.selectedUserId ? { id: this.selectedUserId } : undefined
+    };
+
+    this.missionService.updateMission(this.selectedMission.id, missionToUpdate)
+      .subscribe({
+        next: (mission: Mission) => {
+          this.loadMissions();
+          this.closeModal();
+          alert('Mission mise à jour avec succès!');
+        },
+        error: (err: any) => {
+          console.error('Erreur mise à jour mission:', err);
+          alert('Erreur lors de la mise à jour de la mission');
+        }
+      });
+  }
+
+  assignUserToMission(missionId: number, userId: number): void {
+    this.missionService.assignUserToMission(missionId, userId)
+      .subscribe({
+        next: (mission: Mission) => {
+          this.loadMissions();
+          alert('Utilisateur assigné avec succès!');
+        },
+        error: (err: any) => {
+          console.error('Erreur assignation utilisateur:', err);
+          alert('Erreur lors de l\'assignation de l\'utilisateur');
+        }
+      });
+  }
+
+  deleteMission(id: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette mission ?')) {
+      this.missionService.deleteMission(id).subscribe({
+        next: () => {
+          this.loadMissions();
+          alert('Mission supprimée avec succès!');
+        },
+        error: (err: any) => {
+          console.error('Erreur suppression mission:', err);
+          alert('Erreur lors de la suppression de la mission');
+        }
+      });
+    }
+  }
+
+  getUserRoles(user: UserRoleDTO): string {
+    return Array.from(user.roles).join(', ');
+  }
 }

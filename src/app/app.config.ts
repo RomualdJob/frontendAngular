@@ -6,6 +6,10 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';  // Importati
 import { DropdownModule, SidebarModule } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
 import { routes } from './app.routes';
+import { ToastrModule } from 'ngx-toastr';  
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+
 
 export const appConfig: ApplicationConfig = {
   providers: [

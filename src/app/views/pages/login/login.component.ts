@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
     console.log('Token during ngOnInit:', token);
     
     // Si le token existe, redirige vers la page de liste
-   if (token!="undefined") {
+  if (token && token !== 'undefined') {
       this.router.navigate(['/dashboard']);
     } else {
       // Sinon, initialiser le formulaire de connexion

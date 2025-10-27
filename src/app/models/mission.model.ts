@@ -1,20 +1,21 @@
-import { UserForMission } from "./UserForMission.model";
-export class Mission {
-  id: number;
-  title: string;
-  description: string;
-  dateDebut: string;
-  dateLimit: string;
-  //user?: User;  // Ajout de l'utilisateur
-  userForMission?: UserForMission; 
- // Ajout de l'utilisateur
+import { User } from './user.model';
 
-  constructor(id: number, title: string, description: string, dateDebut: string, dateLimit: string, userForMission?: UserForMission) {
-    this.id = id;
-    this.title = title;
-    this.description = description;
-    this.dateDebut = dateDebut;
-    this.dateLimit = dateLimit;
-    this.userForMission = this.userForMission;
-  }
+export interface Mission {
+  id: number;
+  titre: string;
+  description: string;
+  budget: number;
+  datePublication: string;
+  dateLimit: string;
+  user?: User; // User complet ou undefined
+}
+
+// Créez une interface pour la création de mission
+export interface CreateMissionRequest {
+  titre: string;
+  description: string;
+  budget: number;
+  datePublication: string;
+  dateLimit: string;
+  user?: { id: number }; // Seulement l'ID pour la création
 }

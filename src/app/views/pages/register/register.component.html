@@ -3,65 +3,69 @@
   <form [formGroup]="registerForm" (ngSubmit)="submitForm()">
     
     <!-- Champ pour le nom -->
-    <div class="form-group">
-      <label for="name">Name</label>
-      <input type="text" class="form-control" id="name" formControlName="name" />
-      <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-danger">
-        <small>Name is required.</small>
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" formControlName="name" 
+             [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+      <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="invalid-feedback">
+        Name is required.
       </div>
     </div>
 
     <!-- Champ pour l'email -->
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" class="form-control" id="email" formControlName="email" />
-      <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
-        <small *ngIf="registerForm.get('email')?.hasError('required')">Email is required.</small>
-        <small *ngIf="registerForm.get('email')?.hasError('email')">Invalid email format.</small>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" formControlName="email"
+             [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+      <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="invalid-feedback">
+        <div *ngIf="registerForm.get('email')?.hasError('required')">Email is required.</div>
+        <div *ngIf="registerForm.get('email')?.hasError('email')">Invalid email format.</div>
       </div>
     </div>
 
     <!-- Champ pour le mot de passe -->
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" class="form-control" id="password" formControlName="password" />
-      <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
-        <small>Password is required.</small>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input type="password" class="form-control" id="password" formControlName="password"
+             [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+      <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="invalid-feedback">
+        Password is required.
       </div>
     </div>
 
     <!-- Champ pour confirmer le mot de passe -->
-    <div class="form-group">
-      <label for="confirmPassword">Confirm Password</label>
-      <input type="password" class="form-control" id="confirmPassword" formControlName="confirmPassword" />
-      <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="text-danger">
-        <small *ngIf="registerForm.get('confirmPassword')?.hasError('required')">Confirm Password is required.</small>
-        <small *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch')">Passwords do not match.</small>
+    <div class="mb-3">
+      <label for="confirmPassword" class="form-label">Confirm Password</label>
+      <input type="password" class="form-control" id="confirmPassword" formControlName="confirmPassword"
+             [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+      <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="invalid-feedback">
+        <div *ngIf="registerForm.get('confirmPassword')?.hasError('required')">Confirm Password is required.</div>
+        <div *ngIf="registerForm.hasError('passwordMismatch')">Passwords do not match.</div>
       </div>
     </div>
 
-    <!-- Champ pour les rôles -->
-    <div class="form-group">
-      <label for="roleName">Roles</label>
-      <div class="d-flex flex-wrap">
-        <div *ngFor="let role of roles" class="form-check form-check-inline">
-          <input 
-            type="checkbox" 
-            [id]="role.roles" 
-            [value]="role.roles" 
-            (change)="onRoleChange(role.roles, $event)" 
-            [checked]="registerForm.get('roleNames')?.value.includes(role.roles)"
-            class="form-check-input"
-          />
-          <label [for]="role.roles" class="form-check-label">{{ role.roles }}</label>
-        </div>
-      </div>
-      <div *ngIf="registerForm.get('roleNames')?.invalid && registerForm.get('roleNames')?.touched" class="text-danger">
-        <small>At least one role is required.</small>
+    <!-- Champ pour les rôles avec liste déroulante -->
+    <div class="mb-3">
+      <label for="role" class="form-label">Roles *</label>
+      <select 
+        class="form-select" 
+        id="role" 
+        formControlName="role"
+        [class.is-invalid]="registerForm.get('role')?.invalid && registerForm.get('role')?.touched">
+        <option value="" disabled selected>Sélectionnez un rôle</option>
+        <!-- CORRECTION : utiliser role.roles au lieu de role.roleName -->
+        <option *ngFor="let role of roles" [value]="role.roles">
+          {{ role.roles }}
+        </option>
+      </select>
+      <div *ngIf="registerForm.get('role')?.invalid && registerForm.get('role')?.touched" class="invalid-feedback">
+        <small>Veuillez sélectionner un rôle.</small>
       </div>
     </div>
 
     <!-- Bouton d'enregistrement -->
-    <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">Register</button>
+    <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">
+      Register
+    </button>
   </form>
 </div>

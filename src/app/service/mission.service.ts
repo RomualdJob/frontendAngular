@@ -1,43 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {Mission} from '../models/mission.model';
+import { Mission, CreateMissionRequest } from '../models/mission.model';
+
 @Injectable({
   providedIn: 'root'
 })
 export class MissionService {
+  private apiUrl = 'http://localhost:8080/missions';
 
-  private apiUrl = 'http://localhost:8080/missions'; 
-             // URL de l'API (à remplacer)
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  // Récupérer toutes les missions
   getAllMissions(): Observable<Mission[]> {
     return this.http.get<Mission[]>(this.apiUrl);
   }
 
-  // Récupérer une mission par son ID
   getMissionById(id: number): Observable<Mission> {
     return this.http.get<Mission>(`${this.apiUrl}/${id}`);
   }
 
-  // Ajouter une mission
-  addMission(mission: Mission): Observable<Mission> {
-    return this.http.post<Mission>(`${this.apiUrl}/addmission`, mission);
+  createMission(mission: CreateMissionRequest): Observable<Mission> {
+    return this.http.post<Mission>(`${this.apiUrl}/mission-user`, mission);
   }
 
-  addMissionUser(id: number, mission: Mission): Observable<Mission> {
-    return this.http.put<Mission>(`${this.apiUrl}/misssion-user/${mission.id}/${id}`, mission);
+  createMissionWithoutUser(mission: CreateMissionRequest): Observable<Mission> {
+    return this.http.post<Mission>(`${this.apiUrl}/add-mission`, mission);
   }
 
-
-  // Mettre à jour une mission existante
-  updateMission(id: number, mission: Mission): Observable<Mission> {
-    return this.http.put<Mission>(`${this.apiUrl}/assign/${mission.id}/${id}`, mission);
+  assignUserToMission(missionId: number, userId: number): Observable<Mission> {
+    return this.http.put<Mission>(`${this.apiUrl}/assign/${missionId}/${userId}`, {});
   }
 
-  // Supprimer une mission
+  updateMission(id: number, mission: CreateMissionRequest): Observable<Mission> {
+    return this.http.put<Mission>(`${this.apiUrl}/${id}`, mission);
+  }
+
   deleteMission(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

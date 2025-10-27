@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../service/user.service';
 import { User } from '../../../models/user.model';
-import { Role } from '../../../models/role.model';  // Assurez-vous que le modèle Role est importé
+import { Role } from '../../../models/role.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ButtonDirective } from '@coreui/angular'; // Import CoreUI components nécessaires
+import { ButtonDirective } from '@coreui/angular';
 
 @Component({
   selector: 'app-user-management',
@@ -15,10 +15,9 @@ import { ButtonDirective } from '@coreui/angular'; // Import CoreUI components n
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss']
 })
-
 export class UserManagementComponent implements OnInit {
   users: User[] = [];
-  roles: Role[] = []; // Ajouter une variable pour stocker les rôles disponibles
+  roles: Role[] = [];
   isModalOpen: boolean = false;
   selectedUser: User = { id: 0, name: '', email: '', roles: [], password: '' };
   isAdding: boolean = false;
@@ -27,28 +26,27 @@ export class UserManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUsers();
-    this.loadRoles();  // Charger les rôles à l'initialisation
+    this.loadRoles();
   }
 
   loadRoles(): void {
-    // Charger les rôles depuis le backend
-    this.userService.getRoles().subscribe(
-      (roles) => {
-        this.roles = roles;
-      },
-      (error) => {
-        console.error('Erreur lors de la récupération des rôles', error);
-      }
-    );
-  }
+  this.userService.getAllRoles().subscribe(
+    (roles: Role[]) => {
+      this.roles = roles;
+    },
+    (error: any) => {
+      console.error('Erreur lors de la récupération des rôles', error);
+    }
+  );
+}
 
   loadUsers(): void {
     this.userService.getAllUsers().subscribe(
-      (data) => {
+      (data: User[]) => {
         this.users = data;
-        console.log("Utilisateurs récupérés:", data); // Afficher les utilisateurs dans la console
+        console.log("Utilisateurs récupérés:", data);
       },
-      (error) => {
+      (error: any) => {
         console.error('Erreur lors de la récupération des utilisateurs', error);
       }
     );
@@ -61,101 +59,106 @@ export class UserManagementComponent implements OnInit {
   }
 
   onEditUser(user: User): void {
-    this.selectedUser = { ...user };
+    this.selectedUser = { 
+      ...user, 
+      roles: [...user.roles]
+    };
     this.isAdding = false;
     this.isModalOpen = true;
   }
 
   closeModal(): void {
     this.isModalOpen = false;
-    if (this.isAdding) {
-      this.selectedUser = { id: 0, name: '', email: '', roles: [], password: '' };
-    }
+    this.selectedUser = { id: 0, name: '', email: '', roles: [], password: '' };
   }
 
   addUser(): void {
     if (this.selectedUser) {
-      // Transformer l'objet avant l'envoi à l'API
-      const transformedUser = {
-        ...this.selectedUser,
-        roleNames: this.selectedUser.roles  // Transformation des rôles en roleNames
+      const userToCreate = {
+        name: this.selectedUser.name,
+        email: this.selectedUser.email,
+        password: this.selectedUser.password,
+        roleNames: this.selectedUser.roles
       };
-  
-      this.userService.addUser(transformedUser).subscribe(
-        (response) => {
+
+      // Utilisez la méthode correcte de votre service
+      this.userService.createUser(userToCreate).subscribe(
+        (response: any) => {
           console.log('Nouvel utilisateur ajouté:', response);
           this.loadUsers();
+          this.closeModal();
         },
-        (error) => {
+        (error: any) => {
           console.error('Erreur lors de l\'ajout de l\'utilisateur', error);
         }
       );
     }
   }
-  
 
   updateUser(): void {
     if (this.selectedUser) {
-      // Créer un objet avec la structure attendue par l'API (changer 'roles' en 'roleNames')
-      const transformedUser = {
-        ...this.selectedUser,
-        roleNames: this.selectedUser.roles  // Transformation des rôles en roleNames
+      const userToUpdate = {
+        name: this.selectedUser.name,
+        email: this.selectedUser.email,
+        password: this.selectedUser.password || undefined, // Ne pas envoyer si vide
+        roleNames: this.selectedUser.roles
       };
-  
-      // Envoi de la requête avec la structure modifiée
-      this.userService.updateUser(this.selectedUser.id, transformedUser).subscribe(
-        (response) => {
+
+      // Utilisez la méthode correcte de votre service
+      this.userService.updateUser(this.selectedUser.id, userToUpdate).subscribe(
+        (response: any) => {
           console.log('Utilisateur mis à jour:', response);
           this.loadUsers();
+          this.closeModal();
         },
-        (error) => {
+        (error: any) => {
           console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
+          alert('Erreur lors de la mise à jour de l\'utilisateur');
         }
       );
     }
   }
-  
 
   onSaveUser(): void {
-    // Vérifier si les rôles sont vides ou contiennent des valeurs invalides (null ou vide)
-    if (this.selectedUser.roles && this.selectedUser.roles.length > 0 && this.selectedUser.roles.every(role => role !== null && role !== '')) {
+    // Vérifier si les rôles sont valides
+    if (this.selectedUser.roles && this.selectedUser.roles.length > 0 && 
+        this.selectedUser.roles.every(role => role !== null && role !== '')) {
       if (this.isAdding) {
         this.addUser();
       } else {
         this.updateUser();
       }
     } else {
-      // Afficher un message d'erreur si les rôles sont invalides
       alert("L'utilisateur doit avoir au moins un rôle valide.");
     }
   }
 
   onDeleteUser(id: number): void {
-    this.userService.deleteUser(id).subscribe(
-      () => {
-        console.log('Utilisateur supprimé');
-        this.loadUsers();
-      },
-      (error) => {
-        console.error('Erreur lors de la suppression de l\'utilisateur', error);
-      }
-    );
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      this.userService.deleteUser(id).subscribe(
+        () => {
+          console.log('Utilisateur supprimé');
+          this.loadUsers();
+        },
+        (error: any) => {
+          console.error('Erreur lors de la suppression de l\'utilisateur', error);
+        }
+      );
+    }
   }
 
   onRoleChange(roleName: string, event: any): void {
-    // Si l'événement indique que la case est cochée
     if (event.target.checked) {
-      // On ajoute le rôle si ce n'est pas null
+      // Ajouter le rôle s'il n'est pas déjà présent
       if (roleName && !this.selectedUser.roles.includes(roleName)) {
         this.selectedUser.roles.push(roleName);
       }
     } else {
-      // Si la case est décochée, on supprime le rôle
+      // Supprimer le rôle
       const index = this.selectedUser.roles.indexOf(roleName);
       if (index > -1) {
         this.selectedUser.roles.splice(index, 1);
       }
     }
   }
-  
 }

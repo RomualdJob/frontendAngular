@@ -1,10 +1,15 @@
-// src/app/models/user.model.ts
-
 export interface User {
   id: number;
-  email: string;
   name: string;
-  password: string;
+  email: string;
   roles: string[];
-  // Ajoutez cette ligne si elle n'existe pas
+  password?: string;
+}
+
+// Ajoutez simplement cette interface
+export interface UserRoleDTO {
+  id: number;
+  name: string;
+  email: string;
+  roles: string[]; // Ou Set<string> selon votre backend
 }
