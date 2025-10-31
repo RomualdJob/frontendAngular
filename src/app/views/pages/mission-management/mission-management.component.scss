@@ -1,19 +1,119 @@
-.modal-backdrop {
-  z-index: 1040;
+// Variables personnalisées pour Mission Management
+$card-hover-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+$transition-base: all 0.3s ease;
+
+// Styles personnalisés pour les cartes de service
+.service-card {
+  transition: $transition-base;
+  border: 1px solid var(--cui-border-color);
+
+  &:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: $card-hover-shadow;
+  }
+
+  .card-title {
+    color: var(--cui-gray-800);
+    margin-bottom: 0.5rem;
+  }
+
+  .card-text {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
 }
 
-.modal {
-  z-index: 1050;
-}
-
-.table th {
+// Badge personnalisé pour les évaluations
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(var(--cui-warning-rgb), 0.1);
+  color: var(--cui-warning);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--cui-border-radius-sm);
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
-.btn-group {
-  white-space: nowrap;
+// Style pour les prix
+.price-tag {
+  font-weight: 600;
+  color: var(--cui-success);
+  font-size: 1.1rem;
 }
 
-textarea {
-  min-height: 100px;
+// Amélioration des en-têtes de section
+.section-header {
+  border-bottom: 2px solid var(--cui-primary);
+  margin-bottom: 1.5rem;
+
+  h2 {
+    color: var(--cui-gray-800);
+    font-weight: 600;
+  }
+}
+
+// Style pour les listes de fonctionnalités
+.feature-list {
+  list-style: none;
+  padding-left: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+
+    &::before {
+      content: "•";
+      color: var(--cui-success);
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .service-card {
+    margin-bottom: 1rem;
+  }
+
+  .section-header {
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+// Animation subtile au survol
+.card-hover-animation {
+  transition: $transition-base;
+
+  &:hover {
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Style pour les badges de niveau
+.level-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+}
+
+// Style pour les indicateurs de langue
+.language-indicator {
+  background: rgba(var(--cui-info-rgb), 0.1);
+  color: var(--cui-info);
+  border: 1px solid rgba(var(--cui-info-rgb), 0.2);
+}
+
+// Correction pour les icônes CoreUI
+.cil-check {
+  // Si les icônes CoreUI ne sont pas chargées, utiliser un substitut
+  &::before {
+    content: "✓";
+  }
 }

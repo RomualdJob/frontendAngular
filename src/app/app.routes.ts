@@ -34,6 +34,15 @@ export const routes: Routes = [
           title: 'Mission management'
         }
       },
+
+      {
+        path: 'freelancer-list',
+        loadComponent: () => import('./views/pages/freelancer-list/freelancer-list.component').then(m => m.FreelancerListComponent),
+        data: {
+          title: 'Mission management'
+        }
+      },
+
       {
         path: 'theme',
         loadChildren: () => import('./views/theme/routes').then((m) => m.routes)
@@ -96,6 +105,13 @@ export const routes: Routes = [
   {
     path: 'register',
     loadComponent: () => import('./views/pages/register/register.component').then(m => m.RegisterComponent),
+    data: {
+      title: 'Register Page'
+    }
+  },
+  {
+    path: 'freelancer-list',
+    loadComponent: () => import('./views/pages/freelancer-list/freelancer-list.component').then(m => m.FreelancerListComponent),
     data: {
       title: 'Register Page'
     }

@@ -185,6 +185,12 @@ export const navItems: INavData[] = [
     iconComponent: { name: 'cil-notes' },
     url: 'user-management'
   },
+   {
+    name: 'Gerer les freelances',
+    iconComponent: { name: 'cil-notes' },
+    url: '/freelancer-list'
+  }
+  ,
   {
     name: 'Gerer les missions',
     iconComponent: { name: 'cil-notes' },
@@ -194,8 +200,9 @@ export const navItems: INavData[] = [
     name: 'Gerer les evaluations',
     iconComponent: { name: 'cil-notes' },
     url: '/evaluation-management'
-  }
-  ,
+  },
+
+  
   {
     name: 'Gerer les rapports',
     iconComponent: { name: 'cil-notes' },
